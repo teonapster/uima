@@ -1,5 +1,5 @@
 
-/* First created by JCasGen Sat Mar 22 19:34:27 EET 2014 */
+/* First created by JCasGen Sun Mar 23 10:49:12 EET 2014 */
 package com;
 
 import org.apache.uima.jcas.JCas;
@@ -16,7 +16,7 @@ import org.apache.uima.jcas.tcas.Annotation_Type;
 /** 
  * Updated by JCasGen Sun Mar 23 10:49:12 EET 2014
  * @generated */
-public class Sentence_Type extends Annotation_Type {
+public class Word_Type extends Annotation_Type {
   /** @generated 
    * @return the generator for this type
    */
@@ -26,47 +26,47 @@ public class Sentence_Type extends Annotation_Type {
   private final FSGenerator fsGenerator = 
     new FSGenerator() {
       public FeatureStructure createFS(int addr, CASImpl cas) {
-  			 if (Sentence_Type.this.useExistingInstance) {
+  			 if (Word_Type.this.useExistingInstance) {
   			   // Return eq fs instance if already created
-  		     FeatureStructure fs = Sentence_Type.this.jcas.getJfsFromCaddr(addr);
+  		     FeatureStructure fs = Word_Type.this.jcas.getJfsFromCaddr(addr);
   		     if (null == fs) {
-  		       fs = new Sentence(addr, Sentence_Type.this);
-  			   Sentence_Type.this.jcas.putJfsFromCaddr(addr, fs);
+  		       fs = new Word(addr, Word_Type.this);
+  			   Word_Type.this.jcas.putJfsFromCaddr(addr, fs);
   			   return fs;
   		     }
   		     return fs;
-        } else return new Sentence(addr, Sentence_Type.this);
+        } else return new Word(addr, Word_Type.this);
   	  }
     };
   /** @generated */
   @SuppressWarnings ("hiding")
-  public final static int typeIndexID = Sentence.typeIndexID;
+  public final static int typeIndexID = Word.typeIndexID;
   /** @generated 
      @modifiable */
   @SuppressWarnings ("hiding")
-  public final static boolean featOkTst = JCasRegistry.getFeatOkTst("com.Sentence");
+  public final static boolean featOkTst = JCasRegistry.getFeatOkTst("com.Word");
  
   /** @generated */
-  final Feature casFeat_Sentence;
+  final Feature casFeat_Word;
   /** @generated */
-  final int     casFeatCode_Sentence;
+  final int     casFeatCode_Word;
   /** @generated
    * @param addr low level Feature Structure reference
    * @return the feature value 
    */ 
-  public String getSentence(int addr) {
-        if (featOkTst && casFeat_Sentence == null)
-      jcas.throwFeatMissing("Sentence", "com.Sentence");
-    return ll_cas.ll_getStringValue(addr, casFeatCode_Sentence);
+  public String getWord(int addr) {
+        if (featOkTst && casFeat_Word == null)
+      jcas.throwFeatMissing("Word", "com.Word");
+    return ll_cas.ll_getStringValue(addr, casFeatCode_Word);
   }
   /** @generated
    * @param addr low level Feature Structure reference
    * @param v value to set 
    */    
-  public void setSentence(int addr, String v) {
-        if (featOkTst && casFeat_Sentence == null)
-      jcas.throwFeatMissing("Sentence", "com.Sentence");
-    ll_cas.ll_setStringValue(addr, casFeatCode_Sentence, v);}
+  public void setWord(int addr, String v) {
+        if (featOkTst && casFeat_Word == null)
+      jcas.throwFeatMissing("Word", "com.Word");
+    ll_cas.ll_setStringValue(addr, casFeatCode_Word, v);}
     
   
 
@@ -77,13 +77,13 @@ public class Sentence_Type extends Annotation_Type {
 	 * @param jcas JCas
 	 * @param casType Type 
 	 */
-  public Sentence_Type(JCas jcas, Type casType) {
+  public Word_Type(JCas jcas, Type casType) {
     super(jcas, casType);
     casImpl.getFSClassRegistry().addGeneratorForType((TypeImpl)this.casType, getFSGenerator());
 
  
-    casFeat_Sentence = jcas.getRequiredFeatureDE(casType, "Sentence", "uima.cas.String", featOkTst);
-    casFeatCode_Sentence  = (null == casFeat_Sentence) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_Sentence).getCode();
+    casFeat_Word = jcas.getRequiredFeatureDE(casType, "Word", "uima.cas.String", featOkTst);
+    casFeatCode_Word  = (null == casFeat_Word) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_Word).getCode();
 
   }
 }

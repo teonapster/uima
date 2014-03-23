@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Sat Mar 22 19:34:27 EET 2014 */
+/* First created by JCasGen Sun Mar 23 10:49:12 EET 2014 */
 package com;
 
 import org.apache.uima.jcas.JCas; 
@@ -14,12 +14,12 @@ import org.apache.uima.jcas.tcas.Annotation;
  * Updated by JCasGen Sun Mar 23 10:49:12 EET 2014
  * XML source: /home/Data/workspace/StructedInfo/descriptors/typeSystemDescriptor.xml
  * @generated */
-public class Sentence extends Annotation {
+public class Word extends Annotation {
   /** @generated
    * @ordered 
    */
   @SuppressWarnings ("hiding")
-  public final static int typeIndexID = JCasRegistry.register(Sentence.class);
+  public final static int typeIndexID = JCasRegistry.register(Word.class);
   /** @generated
    * @ordered 
    */
@@ -33,14 +33,14 @@ public class Sentence extends Annotation {
  
   /** Never called.  Disable default constructor
    * @generated */
-  protected Sentence() {/* intentionally empty block */}
+  protected Word() {/* intentionally empty block */}
     
   /** Internal - constructor used by generator 
    * @generated
    * @param addr low level Feature Structure reference
    * @param type the type of this Feature Structure 
    */
-  public Sentence(int addr, TOP_Type type) {
+  public Word(int addr, TOP_Type type) {
     super(addr, type);
     readObject();
   }
@@ -48,7 +48,7 @@ public class Sentence extends Annotation {
   /** @generated
    * @param jcas JCas to which this Feature Structure belongs 
    */
-  public Sentence(JCas jcas) {
+  public Word(JCas jcas) {
     super(jcas);
     readObject();   
   } 
@@ -58,7 +58,7 @@ public class Sentence extends Annotation {
    * @param begin offset to the begin spot in the SofA
    * @param end offset to the end spot in the SofA 
   */  
-  public Sentence(JCas jcas, int begin, int end) {
+  public Word(JCas jcas, int begin, int end) {
     super(jcas);
     setBegin(begin);
     setEnd(end);
@@ -77,25 +77,25 @@ public class Sentence extends Annotation {
  
     
   //*--------------*
-  //* Feature: Sentence
+  //* Feature: Word
 
-  /** getter for Sentence - gets 
+  /** getter for Word - gets 
    * @generated
    * @return value of the feature 
    */
-  public String getSentence() {
-    if (Sentence_Type.featOkTst && ((Sentence_Type)jcasType).casFeat_Sentence == null)
-      jcasType.jcas.throwFeatMissing("Sentence", "com.Sentence");
-    return jcasType.ll_cas.ll_getStringValue(addr, ((Sentence_Type)jcasType).casFeatCode_Sentence);}
+  public String getWord() {
+    if (Word_Type.featOkTst && ((Word_Type)jcasType).casFeat_Word == null)
+      jcasType.jcas.throwFeatMissing("Word", "com.Word");
+    return jcasType.ll_cas.ll_getStringValue(addr, ((Word_Type)jcasType).casFeatCode_Word);}
     
-  /** setter for Sentence - sets  
+  /** setter for Word - sets  
    * @generated
    * @param v value to set into the feature 
    */
-  public void setSentence(String v) {
-    if (Sentence_Type.featOkTst && ((Sentence_Type)jcasType).casFeat_Sentence == null)
-      jcasType.jcas.throwFeatMissing("Sentence", "com.Sentence");
-    jcasType.ll_cas.ll_setStringValue(addr, ((Sentence_Type)jcasType).casFeatCode_Sentence, v);}    
+  public void setWord(String v) {
+    if (Word_Type.featOkTst && ((Word_Type)jcasType).casFeat_Word == null)
+      jcasType.jcas.throwFeatMissing("Word", "com.Word");
+    jcasType.ll_cas.ll_setStringValue(addr, ((Word_Type)jcasType).casFeatCode_Word, v);}    
   }
 
     

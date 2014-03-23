@@ -17,5 +17,17 @@
         </featureDescription>
       </features>
     </typeDescription>
-    </types>
+    <typeDescription>
+      <name>com.Word</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>Word</name>
+          <description/>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
 </typeSystemDescription>
