@@ -3,11 +3,11 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>  
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="WordAnnotator">
-      <import location="WordAnnotator.xml"/>
+    <delegateAnalysisEngine key="WhitespaceTokenizer">
+      <import location="WhitespaceTokenizer.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="SentenceAnnotator">
-      <import location="SentenceAnnotator.xml"/>
+    <delegateAnalysisEngine key="HmmTagger">
+      <import location="HmmTagger.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -15,21 +15,22 @@
     <description/>
     <version>1.0</version>
     <vendor/>
-    <configurationParameters/>
+    <configurationParameters searchStrategy="language_fallback"/>
     <configurationParameterSettings/>
     <flowConstraints>
       <fixedFlow>
-        <node>WordAnnotator</node>
-        <node>SentenceAnnotator</node>
+        <node>WhitespaceTokenizer</node>
+        <node>HmmTagger</node>
       </fixedFlow>
     </flowConstraints>
+    <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
       <capability>
         <inputs/>
         <outputs>
-          <type allAnnotatorFeatures="true">com.Word</type>
-          <type allAnnotatorFeatures="true">com.Sentence</type>
+          <type allAnnotatorFeatures="true">org.apache.uima.TokenAnnotation</type>
+          <type allAnnotatorFeatures="true">org.apache.uima.SentenceAnnotation</type>
         </outputs>
         <languagesSupported/>
       </capability>

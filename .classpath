@@ -11,6 +11,6 @@
 	<classpathentry kind="lib" path="/home/Data/Documents/UIMA_research/apache-uima/lib/uima-examples.jar"/>
 	<classpathentry kind="lib" path="/home/Data/Documents/UIMA_research/apache-uima/lib/uimaj-bootstrap.jar"/>
 	<classpathentry kind="lib" path="/home/Data/Documents/UIMA_research/apache-uima/lib/uima-tools.jar"/>
-	<classpathentry kind="lib" path="resources"/>
+	<classpathentry exported="true" kind="lib" path="resources"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

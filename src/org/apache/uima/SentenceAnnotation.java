@@ -46,18 +46,15 @@ public class SentenceAnnotation extends Annotation {
   public final static int type = typeIndexID;
 
   /** @generated */
-  public int getTypeIndexID() {
-    return typeIndexID;
-  }
-
+  public int getTypeIndexID() {return typeIndexID;}
+ 
   /**
    * Never called. Disable default constructor
    * 
    * @generated
    */
-  protected SentenceAnnotation() {
-  }
-
+  protected SentenceAnnotation() {/* intentionally empty block */}
+    
   /**
    * Internal - constructor used by generator
    * 
@@ -67,12 +64,12 @@ public class SentenceAnnotation extends Annotation {
     super(addr, type);
     readObject();
   }
-
+  
   /** @generated */
   public SentenceAnnotation(JCas jcas) {
     super(jcas);
-    readObject();
-  }
+    readObject();   
+  } 
 
   /** @generated */
   public SentenceAnnotation(JCas jcas, int begin, int end) {
@@ -80,12 +77,12 @@ public class SentenceAnnotation extends Annotation {
     setBegin(begin);
     setEnd(end);
     readObject();
-  }
+  }   
 
-  /**
+  /** 
    * <!-- begin-user-doc --> Write your own initialization here <!-- end-user-doc -->
-   * 
-   * @generated modifiable
+   *
+   * @generated modifiable 
    */
   private void readObject() {
   }

@@ -91,6 +91,7 @@ public class HMMTagger extends JCasAnnotator_ImplBase implements Tagger {
    * Default sentence annotation type which covers token annotations
    */
   private static final String DEFAULT_SENTENCE_TYPE = "org.apache.uima.SentenceAnnotation";
+  //private static final String DEFAULT_SENTENCE_TYPE = "com.SentenceAnnotation";
   /**
    * Default token feature path value
    */
