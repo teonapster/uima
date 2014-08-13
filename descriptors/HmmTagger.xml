@@ -69,7 +69,7 @@
       <nameValuePair>
         <name>NGRAM_SIZE</name>
         <value>
-          <integer>3</integer>
+          <integer>2</integer>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
