@@ -3,10 +3,10 @@
 /* First created by JCasGen Sun Mar 23 10:49:12 EET 2014 */
 package com;
 
+
 import org.apache.uima.jcas.JCas; 
 import org.apache.uima.jcas.JCasRegistry;
 import org.apache.uima.jcas.cas.TOP_Type;
-
 import org.apache.uima.jcas.tcas.Annotation;
 
 
@@ -95,7 +95,8 @@ public class Word extends Annotation {
   public void setWord(String v) {
     if (Word_Type.featOkTst && ((Word_Type)jcasType).casFeat_Word == null)
       jcasType.jcas.throwFeatMissing("Word", "com.Word");
-    jcasType.ll_cas.ll_setStringValue(addr, ((Word_Type)jcasType).casFeatCode_Word, v);}    
+    jcasType.ll_cas.ll_setStringValue(addr, ((Word_Type)jcasType).casFeatCode_Word, v);}
+
   }
 
     
