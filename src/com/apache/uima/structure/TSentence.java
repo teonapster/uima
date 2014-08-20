@@ -16,21 +16,6 @@ public class TSentence {
 		this.id = id;
 		
 	}
-
-	/**
-	 * Add new match of current word and keep sentenceId
-	 * @param sentenceId: sentence id of current match
-	 */
-	public void addNewWord(String word){
-		int wordId = TStringTools.identizer(word);
-		TWord wordTemp = (TWord)words.get(wordId);
-		if(wordTemp==null){
-			words.put(wordId, new TWord(word,wordId));
-		}
-		else{
-			wordTemp.addNewMatch();
-		}	
-	}
 	
 	public void addNewMatch(){
 		counter++;
