@@ -66,26 +66,26 @@ public class TokenAnnotation_Type extends Annotation_Type {
   public final static boolean featOkTst = JCasRegistry.getFeatOkTst("org.apache.uima.TokenAnnotation");
 
   /** @generated */
-  final Feature casFeat_posTag;
+  final Feature casFeat_tokenType;
   /** @generated */
-  final int     casFeatCode_posTag;
+  final int     casFeatCode_tokenType;
   /** @generated
    * @param addr low level Feature Structure reference
    * @return the feature value 
    */ 
-  public String getPosTag(int addr) {
-        if (featOkTst && casFeat_posTag == null)
-      jcas.throwFeatMissing("posTag", "org.apache.uima.TokenAnnotation");
-    return ll_cas.ll_getStringValue(addr, casFeatCode_posTag);
+  public String getTokenType(int addr) {
+        if (featOkTst && casFeat_tokenType == null)
+      jcas.throwFeatMissing("tokenType", "org.apache.uima.TokenAnnotation");
+    return ll_cas.ll_getStringValue(addr, casFeatCode_tokenType);
   }
   /** @generated
    * @param addr low level Feature Structure reference
    * @param v value to set 
    */    
-  public void setPosTag(int addr, String v) {
-        if (featOkTst && casFeat_posTag == null)
-      jcas.throwFeatMissing("posTag", "org.apache.uima.TokenAnnotation");
-    ll_cas.ll_setStringValue(addr, casFeatCode_posTag, v);}
+  public void setTokenType(int addr, String v) {
+        if (featOkTst && casFeat_tokenType == null)
+      jcas.throwFeatMissing("tokenType", "org.apache.uima.TokenAnnotation");
+    ll_cas.ll_setStringValue(addr, casFeatCode_tokenType, v);}
     
   
 
@@ -101,8 +101,8 @@ public class TokenAnnotation_Type extends Annotation_Type {
     casImpl.getFSClassRegistry().addGeneratorForType((TypeImpl)this.casType, getFSGenerator());
 
  
-    casFeat_posTag = jcas.getRequiredFeatureDE(casType, "posTag", "uima.cas.String", featOkTst);
-    casFeatCode_posTag  = (null == casFeat_posTag) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_posTag).getCode();
+    casFeat_tokenType = jcas.getRequiredFeatureDE(casType, "tokenType", "uima.cas.String", featOkTst);
+    casFeatCode_tokenType  = (null == casFeat_tokenType) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_tokenType).getCode();
 
   }
 }

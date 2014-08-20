@@ -88,23 +88,23 @@ public class TokenAnnotation extends Annotation {
   }
 
   //*--------------*
-  //* Feature: posTag
+  //* Feature: tokenType
 
-  /** getter for posTag - gets contains part-of-speech of a corresponding token
+  /** getter for tokenType - gets token type
    * @generated
    * @return value of the feature 
    */
-  public String getPosTag() {
-    if (TokenAnnotation_Type.featOkTst && ((TokenAnnotation_Type)jcasType).casFeat_posTag == null)
-      jcasType.jcas.throwFeatMissing("posTag", "org.apache.uima.TokenAnnotation");
-    return jcasType.ll_cas.ll_getStringValue(addr, ((TokenAnnotation_Type)jcasType).casFeatCode_posTag);}
+  public String getTokenType() {
+    if (TokenAnnotation_Type.featOkTst && ((TokenAnnotation_Type)jcasType).casFeat_tokenType == null)
+      jcasType.jcas.throwFeatMissing("tokenType", "org.apache.uima.TokenAnnotation");
+    return jcasType.ll_cas.ll_getStringValue(addr, ((TokenAnnotation_Type)jcasType).casFeatCode_tokenType);}
     
-  /** setter for posTag - sets contains part-of-speech of a corresponding token 
+  /** setter for tokenType - sets token type 
    * @generated
    * @param v value to set into the feature 
    */
-  public void setPosTag(String v) {
-    if (TokenAnnotation_Type.featOkTst && ((TokenAnnotation_Type)jcasType).casFeat_posTag == null)
-      jcasType.jcas.throwFeatMissing("posTag", "org.apache.uima.TokenAnnotation");
-    jcasType.ll_cas.ll_setStringValue(addr, ((TokenAnnotation_Type)jcasType).casFeatCode_posTag, v);}    
+  public void setTokenType(String v) {
+    if (TokenAnnotation_Type.featOkTst && ((TokenAnnotation_Type)jcasType).casFeat_tokenType == null)
+      jcasType.jcas.throwFeatMissing("tokenType", "org.apache.uima.TokenAnnotation");
+    jcasType.ll_cas.ll_setStringValue(addr, ((TokenAnnotation_Type)jcasType).casFeatCode_tokenType, v);}    
   }

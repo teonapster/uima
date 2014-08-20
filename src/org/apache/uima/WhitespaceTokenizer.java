@@ -226,7 +226,7 @@ public class WhitespaceTokenizer extends CasAnnotator_ImplBase {
     *           annotation end position
     */
    private void createAnnotation(Type annotationType, int startPos, int endPos) {
-
+	   
       AnnotationFS annot = this.cas.createAnnotation(annotationType, startPos,
             endPos);
       this.cas.addFsToIndexes(annot);
