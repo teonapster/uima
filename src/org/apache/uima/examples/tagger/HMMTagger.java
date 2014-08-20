@@ -332,7 +332,7 @@ MappingInterface MAPPING;
       
     }
     tww.initializeAdjMatrix();
-    tww.analyse("telnet", 5);
+    tww.analyse("user", 5);
     //tww.printAdjMatrix();
   }
 

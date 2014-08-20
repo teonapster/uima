@@ -137,7 +137,7 @@ public class TWordWarehouse {
 		for(int i=0;i<k;++i){
 			int wordId = (Integer)getKeyByValue(indexer,colIndexes[i]);
 			TWord word = (TWord) words.get(wordId);
-			System.out.println(i+1+" word"+word.getWord());
+			System.out.println(i+1+" word "+word.getWord());
 		}
 		return wordsFound;
 	}
@@ -154,27 +154,30 @@ public class TWordWarehouse {
 	
 	private void sortIndexer(int[] commons, int[] wordsMax,int[] colIndexes) {
 		for(int i=0;i<commons.length;++i){
-			pushToIndexer(0,wordsMax,commons[i],colIndexes,i);
+			pushToIndexer(wordsMax,commons[i],colIndexes,i);
 		}
+		System.out.print("");
 	}
 	
 	
 	//desc sorting e.g [5,4,3,2,1]
-	private void pushToIndexer(int startFrom, int[] wordsMax,int common,int [] colIndexes,int wordCol){
-		for(int j=startFrom;j<wordsMax.length;++j){
-			if(common<wordsMax[j]){
-				pushToIndexer(j,wordsMax,common,colIndexes,wordCol);
-			}
-			else{//common>wordsMax[j] shift 1 time right old digits
-				if(j<wordsMax.length-1)
-					wordsMax[j+1]=wordsMax[j];
+	private void pushToIndexer( int[] wordsMax,int common,int [] colIndexes,int wordCol){
+		for(int j=0;j<wordsMax.length;++j){
+			if(common>=wordsMax[j]){
+				shiftDigits(wordsMax,j+1);
 				wordsMax[j]= common;
-				if(j<colIndexes.length-1)
-					colIndexes[j+1]=colIndexes[j];
+				shiftDigits(colIndexes,j+1);
 				colIndexes[j]=wordCol;
 				break;
 			}
 				
+		}
+	}
+	
+	private void shiftDigits(int[] wordsMax,int index){
+		if(index+1<wordsMax.length){
+			shiftDigits(wordsMax,index+1);
+			wordsMax[index]=wordsMax[index-1];
 		}
 	}
 }

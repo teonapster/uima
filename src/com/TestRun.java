@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,11 +32,13 @@ import com.apache.uima.structure.TWordWarehouse;
 public class TestRun {
 
 	
-	public static void main(String[] args) throws UIMAException, IOException  {
+	public static void main(String[] args) throws UIMAException, IOException, URISyntaxException  {
 		//TestRun.descriptorGenerate();
 		
 		//Try simple with uima
-		File specFile = new File("/home/teonapster/workspace/uimaProject/uima/src/com/SentenceWordAnnotator.xml");
+		//TODO Change static path
+		
+		File specFile = new File(TestRun.class.getResource("/com/SentenceWordAnnotator.xml").toURI());
 			XMLInputSource in = new XMLInputSource(specFile);
 			ResourceSpecifier specifier = UIMAFramework.getXMLParser().
 			    parseResourceSpecifier(in);
