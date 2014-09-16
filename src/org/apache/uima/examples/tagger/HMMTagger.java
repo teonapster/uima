@@ -134,15 +134,10 @@ public class HMMTagger extends JCasAnnotator_ImplBase implements Tagger {
   /**
    * Word Warehouse. Store Sentences and word as tree (Word inside Sentence)
    */
-  private TWordWarehouse tww = new TWordWarehouse();
+  private TWordWarehouse tww = TWordWarehouse.getInstance();
 
-  public TWordWarehouse getTww() {
-	return tww;
-}
+  
 
-public void setTww(TWordWarehouse tww) {
-	this.tww = tww;
-}
 
 MappingInterface MAPPING;
 
@@ -285,7 +280,7 @@ MappingInterface MAPPING;
       int sentenceId = TStringTools.identizer(sentence.getCoveredText());
       
       //Add sentence to warehouse
-      tww.addSentence(sentence.getCoveredText(),sentenceId);
+      //tww.addSentence(sentence.getCoveredText(),sentenceId);
       
       
       System.out.print(sentence.getCoveredText()+"\n");
@@ -331,8 +326,7 @@ MappingInterface MAPPING;
       }
       
     }
-    tww.initializeAdjMatrix();
-    tww.analyse("user", 5);
+    
     //tww.printAdjMatrix();
   }
 

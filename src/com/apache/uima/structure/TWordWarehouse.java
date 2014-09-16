@@ -1,5 +1,14 @@
 package com.apache.uima.structure;
 
+import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,18 +16,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.TestRun;
+import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.util.io.JsonWriter;
+
+
+
 public class TWordWarehouse {
-	private Map sentences = new HashMap<Integer,TSentence>();
-	private Map words = new HashMap<Integer,TWord>();
-	private Map indexer = new HashMap<Integer,Integer>();
-	private int adjMatrix[][];
-	private int totalWords;
-	private int totalSentences;
+	private static volatile TWordWarehouse instance = null; 
+	//static private Map sentences = new HashMap<Integer,TSentence>();
+	static private Map words = new HashMap<Integer,TWord>();   //TODO SERIALIZE
+	static private Map indexer = new HashMap<Integer,Integer>(); //TODO SERIALIZE
+	static private TLargeIntMatrix matrix;
+	static private int totalWords;
+	static private int totalSentences;
 	
 	public TWordWarehouse(){
-		totalWords=0;
+		//totalWords=0;
 	}
 	
+	/**
+	 * Use singleton pattern. There is just one warehouse
+	 * @return instance of warehouse
+	 */
+	public static TWordWarehouse getInstance(){
+		if (instance == null) {
+            synchronized (TWordWarehouse.class) {
+                // Double check
+                if (instance == null) {
+                    instance = new TWordWarehouse();
+                }
+            }
+        }
+        return instance;
+	}
+	/**
+	 * @deprecated if we keep all sentences our memory will raise dangerous
+	 * @param sentence
+	 * @param sentenceId
+	 
 	public void addSentence(String sentence,int sentenceId){
 		TSentence sentenceTemp = (TSentence)sentences.get(sentenceId);
 		if(sentenceTemp==null){
@@ -30,7 +66,7 @@ public class TWordWarehouse {
 			sentenceTemp.addNewMatch();
 		}
 	}
-	
+*/	
 	
 	/**
 	 * Add new match of current word and keep sentenceId
@@ -57,50 +93,109 @@ public class TWordWarehouse {
 		totalWords++;
 	}
 	
-	
-	public void initializeAdjMatrix(){
-		adjMatrix = new int[words.entrySet().size()][words.entrySet().size()];
+	/**
+	 * Build Adjacency matrix for total words
+	 * @throws IOException 
+	 */
+	public void initializeAdjMatrix() throws IOException{
+		int arraySize = words.entrySet().size();
+		//adjMatrix = new int[words.entrySet().size()][words.entrySet().size()];
+		matrix = new TLargeIntMatrix("ldm.test", arraySize, arraySize);
 		int adjX=0;
 		int adjX0=0;
 		int adjY=0;
+		long startTime = System.currentTimeMillis();
 		System.out.print("\t");
 		for (Iterator<TWord> wordIter0 =words.entrySet().iterator(); wordIter0.hasNext(); adjX0++){
 			Map.Entry pairs1 = (Map.Entry)wordIter0.next();
 			TWord wordd = (TWord)pairs1.getValue();
+			if(adjX>arraySize-1)
 			System.out.print(wordd.getWord()+"\t");
 		}
+		long timeElapsed = System.currentTimeMillis()-startTime;
+		
 		System.out.print("\n");
+		Toolkit.getDefaultToolkit().beep();   
 		for (Iterator<TWord> wordIter =words.entrySet().iterator(); wordIter.hasNext(); adjX++){
+			startTime = System.currentTimeMillis();
 			Map.Entry pairs = (Map.Entry)wordIter.next();
 			TWord word = (TWord)pairs.getValue();
 			System.out.print(word.getWord()+"\t");
 			indexer.put(word.getWordId(), adjX);
-			for (Iterator<TWord> wordIter2 =words.entrySet().iterator(); adjY<words.entrySet().size(); adjY++){
+			if(word.getWord().length()>2)
+			for (Iterator<TWord> wordIter2 =words.entrySet().iterator(); wordIter2.hasNext(); adjY++){
 				//Diagonial Matrix needed. We don't need same word to be returned!
 				Map.Entry pairsInner = (Map.Entry)wordIter2.next();
 				if(adjX!=adjY){
 					
 					TWord wordInner = (TWord)pairsInner.getValue();
 					int overlaps = findOverlaps(word,wordInner);
-					adjMatrix[adjX][adjY]=overlaps;
+					//unwanted matrix sets increase memory consumption!!!!
+					if(overlaps>0)
+						matrix.set(adjX,adjY,overlaps);
+					
+					if(overlaps>10)
+						System.out.print("");
 					
 				}
-				else 
-					adjMatrix[adjX][adjY]=0;
-				System.out.print(adjMatrix[adjX][adjY]+"\t");
+				//IF enable else matrix.set then complexity goes to O(n)
+				//else 
+					//matrix.set(adjX,adjY,0);
+				//System.out.print(matrix.get(adjX,adjY)+" ");
+				if(adjY>arraySize-1)
+					System.out.print("t");
 			}
+			timeElapsed = System.currentTimeMillis()-startTime;
 			System.out.print("\n");
 			adjY=0; // reset adjY in order to make loop to read next row's columns
+			
 		}
+		//printAdjMatrix();
+	}
+	
+	public void saveWarehouse() throws URISyntaxException, IOException{
+		File f = new File(getClass().getResource("words.json").toURI());
+		File f2 = new File(getClass().getResource("indexer.json").toURI());
+		OutputStream os = new FileOutputStream(f);
+		OutputStream os2 = new FileOutputStream(f2);
+		
+		JsonWriter jw = new JsonWriter(os);
+		jw.write(words);
+		jw.close();
+		
+		jw=new JsonWriter(os2);
+		jw.write(indexer);
+		jw.close();
+	}
+	
+	public void openWarehouse() throws URISyntaxException, IOException{
+		
+		
+		File f = new File(getClass().getResource("words.json").toURI());
+		File f2 = new File(getClass().getResource("indexer.json").toURI());
+		InputStream is = new FileInputStream(f);
+		InputStream is2 = new FileInputStream(f2);
+		
+		JsonReader jr = new JsonReader(is);
+		words = (HashMap<Integer,TWord>)jr.readObject();
+		jr.close();
+		
+		jr = new JsonReader(is2);
+		indexer = (HashMap<Integer,Integer>)jr.readObject();
+		jr.close();
+		
+		matrix = new TLargeIntMatrix("ldm.test", words.size(),words.size());
 	}
 	
 	public void printAdjMatrix(){
 		for(int i=0;i<totalWords;++i){
+			int row[] = matrix.getRow(i);
 			for(int j=0;j<totalWords;++j)
-				System.out.print(adjMatrix[i][j]+" ");
+				System.out.print(row[j]+" ");
 			System.out.print("\n");
 		}
 	}
+	
 	/**
 	 * Find sentenceId overlaps between two words. In other words findout 
 	 * common sentences that two words are participate
@@ -112,9 +207,10 @@ public class TWordWarehouse {
 		ArrayList<Integer> w1SentId = w1.getSentenceId();
 		ArrayList<Integer> w2SentId = w2.getSentenceId();
 		int overlaps = 0;
-		
-		for(int i=0;i<w1SentId.size();i++){
-			if(w2SentId.contains(w1SentId.get(i)))
+		if(w2.getWord().equals("stone")&&w1.getWord().equals("album"))
+			System.out.print("");
+		for(int i=0;i<w2SentId.size();i++){
+			if(w1SentId.contains(w2SentId.get(i)))
 					overlaps++;
 		}
 		return overlaps;
@@ -128,17 +224,26 @@ public class TWordWarehouse {
 	 * @return s[]: Words found
 	 */
 	public String[] analyse(String queryWord,int k){
+		long startAnalyze = System.currentTimeMillis();
 		String[] wordsFound = new String[k];
-		int[] wordsMax= new int[k];
+		int[] wordsMaxQueue= new int[k];
 		int[] colIndexes= new int[k];
-		int queryRow = (Integer)indexer.get(TStringTools.identizer(queryWord));
-		sortIndexer(adjMatrix[queryRow],wordsMax,colIndexes);
 		
+		//If word does not exist in our indexer, through null exception
+		int id = TStringTools.identizer(queryWord.toLowerCase());
+		int queryRow = (Integer)indexer.get(id);
+		int row [] = matrix.getRow(queryRow);
+		sortIndexer(row,wordsMaxQueue,colIndexes);
+		System.out.println("");
+		for (int i=0;i<row.length;i++)
+			System.out.print(row[i]+ " ");
+		System.out.println();
 		for(int i=0;i<k;++i){
 			int wordId = (Integer)getKeyByValue(indexer,colIndexes[i]);
 			TWord word = (TWord) words.get(wordId);
-			System.out.println(i+1+" word "+word.getWord());
+			System.out.println(i+1+" word: "+word.getWord()+" matches: "+matrix.get(queryRow,colIndexes[i]));
 		}
+		System.out.println("Analyze took "+((System.currentTimeMillis()-startAnalyze)/1000.0) + " ");
 		return wordsFound;
 	}
 	
@@ -152,32 +257,28 @@ public class TWordWarehouse {
 	}
 
 	
-	private void sortIndexer(int[] commons, int[] wordsMax,int[] colIndexes) {
-		for(int i=0;i<commons.length;++i){
-			pushToIndexer(wordsMax,commons[i],colIndexes,i);
+	private void sortIndexer(int[] row, int[] wordsMaxQueue,int[] colIndexes) {
+		for(int i=0;i<row.length;++i){
+			for(int j=0;j<wordsMaxQueue.length;++j){
+				if(row[i]>=wordsMaxQueue[j]){
+					shiftDigits(wordsMaxQueue,j+1);
+					wordsMaxQueue[j]= row[i];
+					shiftDigits(colIndexes,j+1);
+					colIndexes[j]=i;
+					break;
+				}
+					
+			}
 		}
 		System.out.print("");
 	}
 	
 	
-	//desc sorting e.g [5,4,3,2,1]
-	private void pushToIndexer( int[] wordsMax,int common,int [] colIndexes,int wordCol){
-		for(int j=0;j<wordsMax.length;++j){
-			if(common>=wordsMax[j]){
-				shiftDigits(wordsMax,j+1);
-				wordsMax[j]= common;
-				shiftDigits(colIndexes,j+1);
-				colIndexes[j]=wordCol;
-				break;
-			}
-				
-		}
-	}
-	
 	private void shiftDigits(int[] wordsMax,int index){
-		if(index+1<wordsMax.length){
+		if(index<wordsMax.length){
 			shiftDigits(wordsMax,index+1);
 			wordsMax[index]=wordsMax[index-1];
 		}
+		
 	}
 }
