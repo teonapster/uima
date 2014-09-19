@@ -36,6 +36,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import com.apache.uima.structure.TSentence;
+import com.apache.uima.structure.TStringTools;
 import com.apache.uima.structure.TWordWarehouse;
 
 import java.io.FileInputStream;
@@ -129,8 +130,16 @@ public class HMMTagger extends JCasAnnotator_ImplBase implements Tagger {
   // public String END_OF_SENT_TAG;
 
   public ModelGeneration my_model;
+  
+  /**
+   * Word Warehouse. Store Sentences and word as tree (Word inside Sentence)
+   */
+  private TWordWarehouse tww = TWordWarehouse.getInstance();
 
-  MappingInterface MAPPING;
+  
+
+
+MappingInterface MAPPING;
 
   /**
    * Initialize the Annotator.
@@ -264,45 +273,61 @@ public class HMMTagger extends JCasAnnotator_ImplBase implements Tagger {
     AnnotationIndex tokenIndex = workingView.getAnnotationIndex(getType(workingView, this.theTokenTypeName));
     // iterate over Sentences
     FSIterator sentenceIterator = sentenceIndex.iterator();
-    TWordWarehouse warehouse = new TWordWarehouse();
+    
     
     while (sentenceIterator.hasNext()) {
       Annotation sentence = (Annotation) sentenceIterator.next();
-      TSentence tSentence = warehouse.addSentence(sentence.getCoveredText());
-      System.out.print("Sentence: "+sentence.getCoveredText());
+      int sentenceId = TStringTools.identizer(sentence.getCoveredText());
+      
+      //Add sentence to warehouse
+      //tww.addSentence(sentence.getCoveredText(),sentenceId);
+      
+      
+      System.out.print(sentence.getCoveredText()+"\n");
+      
       tokenList.clear();
       wordList.clear();
 
       FSIterator tokenIterator = tokenIndex.subiterator(sentence);
-      System.out.print(" includes the following tokens: ");
       while (tokenIterator.hasNext()) {
         TokenAnnotation token = (TokenAnnotation) tokenIterator.next();
-        tSentence.addNewWord(token.getCoveredText());
-        System.out.print(token.getCoveredText()+",");
+
         tokenList.add(token);
         wordList.add(token.getCoveredText());
       }
-      System.out.println();
+
       List<String> wordTagList = Viterbi.process(this.N, wordList, this.my_model.suffix_tree, this.my_model.suffix_tree_capitalized, this.my_model.transition_probs,
               this.my_model.word_probs, this.my_model.lambdas2, this.my_model.lambdas3, this.my_model.theta);
 
-      System.out.print("where the pos of each is: ");
-      try {
-        for (int i = 0; i < tokenList.size(); i++) {
-          Annotation token = tokenList.get(i);
 
-          String posTag = wordTagList.get(i);
-          //TODO Filter - allow only nouns
+      try {
+    	  for (int i = 0; i < tokenList.size(); i++)
+              System.out.print("|\t");
+    	 System.out.print("\n");
+        for (int i = 0; i < tokenList.size(); i++) {
           
-          System.out.print(posTag+", ");
+          Annotation token = tokenList.get(i);
+          String posTag = wordTagList.get(i);
+          
+          //TODO include other type of nouns
+          /**Print out token tag (DEBUG)
+          System.out.println(posTag);*/
+          if(posTag.equals("nn")){
+        	  tww.addNewWord(token.getCoveredText(),sentenceId);
+              System.out.print(token.getCoveredText()+"\t");
+          }
           Feature featPOS = getType(workingView, this.theTokenTypeName).getFeatureByBaseName(thePOSAttribute);
           token.setFeatureValueFromString(featPOS, posTag);
 
         }
+        System.out.print("\n");
       } catch (IndexOutOfBoundsException e) {
         System.err.println("POS tagger error - list of tags shorter than list of words");
       }
+      
     }
+    
+    //tww.printAdjMatrix();
   }
 
   /**
