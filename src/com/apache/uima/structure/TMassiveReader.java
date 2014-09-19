@@ -14,6 +14,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 public class TMassiveReader {
 	private AnalysisEngine ae;
 	private TBuffer buffer;
+	private final ClassLoader resourcer = this.getClass().getClassLoader();
+	
 	public TMassiveReader(AnalysisEngine ae){
 		this.ae = ae;
 		this.buffer = TBuffer.getInstance();
@@ -25,7 +27,7 @@ public class TMassiveReader {
 	
 	public void readMassiveFile() throws URISyntaxException, IOException, 
 						ResourceInitializationException, AnalysisEngineProcessException{
-		File f = new File(TMassiveReader.class.getResource("/com/text2.xml").toURI());
+		File f = new File("resources/text2.xml");
 		LineIterator it = FileUtils.lineIterator(f, "UTF-8");
 		try {
 			

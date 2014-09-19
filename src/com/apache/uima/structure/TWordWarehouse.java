@@ -30,6 +30,7 @@ public class TWordWarehouse {
 	static private TLargeIntMatrix matrix;
 	static private int totalWords;
 	static private int totalSentences;
+	private final ClassLoader resourcer = this.getClass().getClassLoader();
 	
 	public TWordWarehouse(){
 		//totalWords=0;
@@ -100,7 +101,7 @@ public class TWordWarehouse {
 	public void initializeAdjMatrix() throws IOException{
 		int arraySize = words.entrySet().size();
 		//adjMatrix = new int[words.entrySet().size()][words.entrySet().size()];
-		matrix = new TLargeIntMatrix("ldm.test", arraySize, arraySize);
+		matrix = new TLargeIntMatrix("resources/dataset.big", arraySize, arraySize);
 		int adjX=0;
 		int adjX0=0;
 		int adjY=0;
@@ -115,7 +116,6 @@ public class TWordWarehouse {
 		long timeElapsed = System.currentTimeMillis()-startTime;
 		
 		System.out.print("\n");
-		Toolkit.getDefaultToolkit().beep();   
 		for (Iterator<TWord> wordIter =words.entrySet().iterator(); wordIter.hasNext(); adjX++){
 			startTime = System.currentTimeMillis();
 			Map.Entry pairs = (Map.Entry)wordIter.next();
@@ -154,8 +154,8 @@ public class TWordWarehouse {
 	}
 	
 	public void saveWarehouse() throws URISyntaxException, IOException{
-		File f = new File(getClass().getResource("words.json").toURI());
-		File f2 = new File(getClass().getResource("indexer.json").toURI());
+		File f = new File("resources/words.json");
+		File f2 = new File("resources/indexer.json");
 		OutputStream os = new FileOutputStream(f);
 		OutputStream os2 = new FileOutputStream(f2);
 		
@@ -168,23 +168,21 @@ public class TWordWarehouse {
 		jw.close();
 	}
 	
-	public void openWarehouse() throws URISyntaxException, IOException{
+	public void openWarehouse() throws IOException{
+		File f = new File("./resources/words.json");
+		File f2 = new File("resources/indexer.json");
+			//Parse word json
+			JsonReader jr = new JsonReader(new FileInputStream(f));
+			words = (HashMap<Integer,TWord>)jr.readObject();
+			jr.close();
+			
+			//Parse indexer json (map wordId with Column)
+			jr = new JsonReader(new FileInputStream(f2));
+			indexer = (HashMap<Integer,Integer>)jr.readObject();
+			jr.close();
+			
+			matrix = new TLargeIntMatrix("resources/dataset.big", words.size(),words.size());
 		
-		
-		File f = new File(getClass().getResource("words.json").toURI());
-		File f2 = new File(getClass().getResource("indexer.json").toURI());
-		InputStream is = new FileInputStream(f);
-		InputStream is2 = new FileInputStream(f2);
-		
-		JsonReader jr = new JsonReader(is);
-		words = (HashMap<Integer,TWord>)jr.readObject();
-		jr.close();
-		
-		jr = new JsonReader(is2);
-		indexer = (HashMap<Integer,Integer>)jr.readObject();
-		jr.close();
-		
-		matrix = new TLargeIntMatrix("ldm.test", words.size(),words.size());
 	}
 	
 	public void printAdjMatrix(){
@@ -207,8 +205,6 @@ public class TWordWarehouse {
 		ArrayList<Integer> w1SentId = w1.getSentenceId();
 		ArrayList<Integer> w2SentId = w2.getSentenceId();
 		int overlaps = 0;
-		if(w2.getWord().equals("stone")&&w1.getWord().equals("album"))
-			System.out.print("");
 		for(int i=0;i<w2SentId.size();i++){
 			if(w1SentId.contains(w2SentId.get(i)))
 					overlaps++;
@@ -222,8 +218,9 @@ public class TWordWarehouse {
 	 * @param queryWord: word to search
 	 * @param k: total words to return
 	 * @return s[]: Words found
+	 * @throws TWordNotFound 
 	 */
-	public String[] analyse(String queryWord,int k){
+	public String[] analyse(String queryWord,int k) throws TWordNotFound{
 		long startAnalyze = System.currentTimeMillis();
 		String[] wordsFound = new String[k];
 		int[] wordsMaxQueue= new int[k];
@@ -231,7 +228,14 @@ public class TWordWarehouse {
 		
 		//If word does not exist in our indexer, through null exception
 		int id = TStringTools.identizer(queryWord.toLowerCase());
-		int queryRow = (Integer)indexer.get(id);
+		Object tmpRow;
+		
+		//Findout if query word exist in our Warehouse. If not throw
+		tmpRow = indexer.get(id);
+			if(tmpRow == null)
+				throw new TWordNotFound(queryWord);
+		
+		int queryRow = (Integer)tmpRow;
 		int row [] = matrix.getRow(queryRow);
 		sortIndexer(row,wordsMaxQueue,colIndexes);
 		System.out.println("");

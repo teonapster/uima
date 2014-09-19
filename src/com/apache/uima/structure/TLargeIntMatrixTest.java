@@ -2,8 +2,16 @@ package com.apache.uima.structure;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.uima.UIMAException;
+import org.apache.uima.UIMAFramework;
+import org.apache.uima.analysis_engine.AnalysisEngine;
+import org.apache.uima.resource.ResourceSpecifier;
+import org.apache.uima.util.XMLInputSource;
 import org.junit.Test;
 
 public class TLargeIntMatrixTest {
@@ -35,4 +43,5 @@ public class TLargeIntMatrixTest {
     private long usedMemory() {
         return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
+   
 }
