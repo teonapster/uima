@@ -236,16 +236,20 @@ public class TWordWarehouse {
 				throw new TWordNotFound(queryWord);
 		
 		int queryRow = (Integer)tmpRow;
+//		int rowSum = 0;
 		int row [] = matrix.getRow(queryRow);
 		sortIndexer(row,wordsMaxQueue,colIndexes);
 		System.out.println("");
-		for (int i=0;i<row.length;i++)
-			System.out.print(row[i]+ " ");
-		System.out.println();
+//		for (int i=0;i<row.length;i++){
+//			//System.out.print(row[i]+ " ");
+//			//rowSum+=row[i];
+//		}
+		System.out.println("Search for "+queryWord);
 		for(int i=0;i<k;++i){
 			int wordId = (Integer)getKeyByValue(indexer,colIndexes[i]);
 			TWord word = (TWord) words.get(wordId);
-			System.out.println(i+1+" word: "+word.getWord()+" matches: "+matrix.get(queryRow,colIndexes[i]));
+			System.out.println(" word "+String.valueOf(i+1)+": "+word.getWord()+" matches: "+
+					matrix.get(queryRow,colIndexes[i])+" freq: "+word.getFrequency());
 		}
 		System.out.println("Analyze took "+((System.currentTimeMillis()-startAnalyze)/1000.0) + " ");
 		return wordsFound;

@@ -312,7 +312,10 @@ MappingInterface MAPPING;
           //TODO include other type of nouns
           /**Print out token tag (DEBUG)
           System.out.println(posTag);*/
-          if(posTag.equals("nn")){
+          if(token.getCoveredText().equals("people")){
+        	  System.out.print("break");
+          }
+          if((posTag.equals("nn"))||(posTag.equals("nns"))){ //nnp,nnps
         	  tww.addNewWord(token.getCoveredText(),sentenceId);
               System.out.print(token.getCoveredText()+"\t");
           }

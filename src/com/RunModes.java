@@ -34,7 +34,7 @@ public class RunModes{
 		tww.saveWarehouse();
 	}
 	
-	public  void analyze(String queryWord, int k){
+	public void open(){
 		TWordWarehouse tww = TWordWarehouse.getInstance();
 		try {
 			tww.openWarehouse();
@@ -42,6 +42,11 @@ public class RunModes{
 			System.out.println("Please initialize knowledge base first");
 			return;
 		}
+	}
+	
+	public  void analyze(String queryWord, int k){
+		TWordWarehouse tww = TWordWarehouse.getInstance();
+		
 		try {
 			tww.analyse(queryWord,k);
 		} catch (TWordNotFound e) {

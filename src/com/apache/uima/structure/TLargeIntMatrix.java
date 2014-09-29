@@ -69,6 +69,21 @@ public class TLargeIntMatrix implements Closeable,Serializable {
         }
         return array;
     }
+    
+    public int[] getCol(int col){
+    	int [] array = new int[this.width];
+        assert col >= 0 && col < width;
+       
+        for(int i=0; i<array.length;++i){
+        	 long p = position(i,col) * NUM_BYTES;
+             int mapN = (int) (p / MAPPING_SIZE);
+             int offN = (int) (p % MAPPING_SIZE);
+             array[i]=mappings.get(mapN).getInt(offN);
+        }
+        return array;
+    }
+    
+    
     public int get(int x, int y) {
         assert x >= 0 && x < width;
         assert y >= 0 && y < height;

@@ -39,4 +39,8 @@ public class TWord {
 	public ArrayList<Integer> getSentenceId(){
 		return sentenceId;
 	}
+	
+	public int getFrequency(){
+		return counter;
+	}
 }
