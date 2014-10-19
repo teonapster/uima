@@ -148,7 +148,7 @@ public class TWordWarehouse {
 			timeElapsed = System.currentTimeMillis()-startTime;
 			System.out.print("\n");
 			adjY=0; // reset adjY in order to make loop to read next row's columns
-			
+			//matrix.close();
 		}
 		//printAdjMatrix();
 	}
@@ -219,12 +219,16 @@ public class TWordWarehouse {
 	 * @param k: total words to return
 	 * @return s[]: Words found
 	 * @throws TWordNotFound 
+	 * @throws IOException 
 	 */
-	public String[] analyse(String queryWord,int k) throws TWordNotFound{
+	public String[] analyse(String queryWord,int k,TSimpleRowWriter tsrw) throws TWordNotFound, IOException{
 		long startAnalyze = System.currentTimeMillis();
 		String[] wordsFound = new String[k];
 		int[] wordsMaxQueue= new int[k];
 		int[] colIndexes= new int[k];
+		
+		
+		
 		
 		//If word does not exist in our indexer, through null exception
 		int id = TStringTools.identizer(queryWord.toLowerCase());
@@ -236,20 +240,21 @@ public class TWordWarehouse {
 				throw new TWordNotFound(queryWord);
 		
 		int queryRow = (Integer)tmpRow;
-//		int rowSum = 0;
 		int row [] = matrix.getRow(queryRow);
 		sortIndexer(row,wordsMaxQueue,colIndexes);
-		System.out.println("");
-//		for (int i=0;i<row.length;i++){
-//			//System.out.print(row[i]+ " ");
-//			//rowSum+=row[i];
-//		}
-		System.out.println("Search for "+queryWord);
+		System.out.println("\nSearch for "+queryWord);
+		if(tsrw!=null){
+			TWord queryAsTWord = (TWord) words.get(id);
+			tsrw.setRow("Search for "+queryWord+" (freq: "+queryAsTWord.getFrequency()+")");
+		}
 		for(int i=0;i<k;++i){
 			int wordId = (Integer)getKeyByValue(indexer,colIndexes[i]);
 			TWord word = (TWord) words.get(wordId);
 			System.out.println(" word "+String.valueOf(i+1)+": "+word.getWord()+" matches: "+
 					matrix.get(queryRow,colIndexes[i])+" freq: "+word.getFrequency());
+			if(tsrw!=null)
+				tsrw.setRow(" word "+String.valueOf(i+1)+": "+word.getWord()+" matches: "+
+				matrix.get(queryRow,colIndexes[i])+" freq: "+word.getFrequency());
 		}
 		System.out.println("Analyze took "+((System.currentTimeMillis()-startAnalyze)/1000.0) + " ");
 		return wordsFound;
@@ -264,7 +269,6 @@ public class TWordWarehouse {
 	    return null;
 	}
 
-	
 	private void sortIndexer(int[] row, int[] wordsMaxQueue,int[] colIndexes) {
 		for(int i=0;i<row.length;++i){
 			for(int j=0;j<wordsMaxQueue.length;++j){
@@ -288,5 +292,17 @@ public class TWordWarehouse {
 			wordsMax[index]=wordsMax[index-1];
 		}
 		
+	}
+	
+	public void closeWarehouse() throws IOException{
+		matrix.close();
+	}
+
+	public void increaseTotalSentences() {
+		totalSentences++;		
+	}
+	
+	public int getSentenceNum(){
+		return totalSentences;
 	}
 }

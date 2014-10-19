@@ -12,6 +12,7 @@ import org.apache.uima.resource.ResourceSpecifier;
 import org.apache.uima.util.XMLInputSource;
 
 import com.apache.uima.structure.TMassiveReader;
+import com.apache.uima.structure.TSimpleRowWriter;
 import com.apache.uima.structure.TWordNotFound;
 import com.apache.uima.structure.TWordWarehouse;
 
@@ -34,23 +35,38 @@ public class RunModes{
 		tww.saveWarehouse();
 	}
 	
-	public void open(){
+	public int open(){
+		long s = System.currentTimeMillis();
 		TWordWarehouse tww = TWordWarehouse.getInstance();
 		try {
 			tww.openWarehouse();
+			
 		} catch (IOException e) {
 			System.out.println("Please initialize knowledge base first");
-			return;
+			return 0;
 		}
+		System.out.println(System.currentTimeMillis()-s+" msec spent for db reading");
+		return tww.getSentenceNum();
 	}
 	
-	public  void analyze(String queryWord, int k){
+	public  void analyze(String queryWord, int k) throws IOException{
 		TWordWarehouse tww = TWordWarehouse.getInstance();
 		
 		try {
-			tww.analyse(queryWord,k);
+			tww.analyse(queryWord,k,null);
 		} catch (TWordNotFound e) {
 			System.out.println(e.getMessage());
+		}
+	}
+	
+	public  void analyzeNexport(String queryWord, int k,TSimpleRowWriter tsrw) throws IOException{
+		TWordWarehouse tww = TWordWarehouse.getInstance();
+		
+		try {
+			tww.analyse(queryWord,k,tsrw);
+		} catch (TWordNotFound e) {
+			System.out.println(e.getMessage());
+			tsrw.setRow(e.getMessage());
 		}
 	}
 }

@@ -281,7 +281,7 @@ MappingInterface MAPPING;
       
       //Add sentence to warehouse
       //tww.addSentence(sentence.getCoveredText(),sentenceId);
-      
+      tww.increaseTotalSentences();
       
       System.out.print(sentence.getCoveredText()+"\n");
       
