@@ -44,6 +44,9 @@ public class RunModes{
 		} catch (IOException e) {
 			System.out.println("Please initialize knowledge base first");
 			return 0;
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		System.out.println(System.currentTimeMillis()-s+" msec spent for db reading");
 		return tww.getSentenceNum();

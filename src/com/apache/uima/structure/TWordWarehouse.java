@@ -7,11 +7,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,6 +34,7 @@ public class TWordWarehouse {
 	static private Map words = new HashMap<Integer,TWord>();   //TODO SERIALIZE
 	static private Map indexer = new HashMap<Integer,Integer>(); //TODO SERIALIZE
 	static private TLargeIntMatrix matrix;
+	static private Map indexedWord= new HashMap<Integer,Map<String,Integer>>(); //TODO SERIALIZE
 	static private int totalWords;
 	static private int totalSentences;
 	private final ClassLoader resourcer = this.getClass().getClassLoader();
@@ -101,7 +108,7 @@ public class TWordWarehouse {
 	public void initializeAdjMatrix() throws IOException{
 		int arraySize = words.entrySet().size();
 		//adjMatrix = new int[words.entrySet().size()][words.entrySet().size()];
-		matrix = new TLargeIntMatrix("resources/dataset.big", arraySize, arraySize);
+		//matrix = new TLargeIntMatrix("resources/dataset.big", arraySize, arraySize);
 		int adjX=0;
 		int adjX0=0;
 		int adjY=0;
@@ -121,7 +128,8 @@ public class TWordWarehouse {
 			Map.Entry pairs = (Map.Entry)wordIter.next();
 			TWord word = (TWord)pairs.getValue();
 			System.out.print(word.getWord()+"\t");
-			indexer.put(word.getWordId(), adjX);
+			//indexer.put(word.getWordId(), adjX); //what'a hell i was thinking here .... use a hash map wordid->list
+			indexedWord.put(word.getWordId(), new HashMap<String,Integer>());
 			if(word.getWord().length()>2)
 			for (Iterator<TWord> wordIter2 =words.entrySet().iterator(); wordIter2.hasNext(); adjY++){
 				//Diagonial Matrix needed. We don't need same word to be returned!
@@ -130,9 +138,10 @@ public class TWordWarehouse {
 					
 					TWord wordInner = (TWord)pairsInner.getValue();
 					int overlaps = findOverlaps(word,wordInner);
+					
 					//unwanted matrix sets increase memory consumption!!!!
 					if(overlaps>0)
-						matrix.set(adjX,adjY,overlaps);
+						((Map) indexedWord.get(word.getWordId())).put(wordInner.getWord(),overlaps);
 					
 					if(overlaps>10)
 						System.out.print("");
@@ -155,7 +164,7 @@ public class TWordWarehouse {
 	
 	public void saveWarehouse() throws URISyntaxException, IOException{
 		File f = new File("resources/words.json");
-		File f2 = new File("resources/indexer.json");
+		File f2 = new File("resources/indexer.dat");
 		OutputStream os = new FileOutputStream(f);
 		OutputStream os2 = new FileOutputStream(f2);
 		
@@ -163,25 +172,38 @@ public class TWordWarehouse {
 		jw.write(words);
 		jw.close();
 		
-		jw=new JsonWriter(os2);
-		jw.write(indexer);
-		jw.close();
+		
+		  
+		 FileOutputStream fos = new FileOutputStream(f2);  
+		 ObjectOutputStream oos = new ObjectOutputStream(fos);          
+		 oos.writeObject(indexedWord);
+		 oos.close();
+		
+//		jw=new JsonWriter(os2);
+//		jw.write(indexer);
+//		jw.close();
 	}
 	
-	public void openWarehouse() throws IOException{
+	public void openWarehouse() throws IOException, ClassNotFoundException{
 		File f = new File("./resources/words.json");
-		File f2 = new File("resources/indexer.json");
+		File f2 = new File("resources/indexer.dat");
 			//Parse word json
 			JsonReader jr = new JsonReader(new FileInputStream(f));
 			words = (HashMap<Integer,TWord>)jr.readObject();
 			jr.close();
 			
-			//Parse indexer json (map wordId with Column)
-			jr = new JsonReader(new FileInputStream(f2));
-			indexer = (HashMap<Integer,Integer>)jr.readObject();
-			jr.close();
 			
-			matrix = new TLargeIntMatrix("resources/dataset.big", words.size(),words.size());
+			FileInputStream fis = new FileInputStream(f2);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			indexedWord = (Map<Integer,Map<String,Integer>>)ois.readObject();
+			ois.close();
+			//Parse indexer json (map wordId with Column)
+//			jr = new JsonReader(new FileInputStream(f2));
+//			indexer = (HashMap<Integer,Integer>)jr.readObject();
+//			jr.close();
+			
+			//matrix = new TLargeIntMatrix("resources/dataset.big", words.size(),words.size());
+			//Open matrix here
 		
 	}
 	
@@ -234,27 +256,23 @@ public class TWordWarehouse {
 		int id = TStringTools.identizer(queryWord.toLowerCase());
 		Object tmpRow;
 		
-		//Findout if query word exist in our Warehouse. If not throw
-		tmpRow = indexer.get(id);
-			if(tmpRow == null)
-				throw new TWordNotFound(queryWord);
-		
-		int queryRow = (Integer)tmpRow;
-		int row [] = matrix.getRow(queryRow);
-		sortIndexer(row,wordsMaxQueue,colIndexes);
+		Map<String,Integer> mappedRow = (Map<String,Integer>)indexedWord.get(id); // Map query word with matches cardinality 
+		mappedRow = sortByValue(mappedRow);
 		System.out.println("\nSearch for "+queryWord);
 		if(tsrw!=null){
 			TWord queryAsTWord = (TWord) words.get(id);
 			tsrw.setRow("Search for "+queryWord+" (freq: "+queryAsTWord.getFrequency()+")");
 		}
-		for(int i=0;i<k;++i){
-			int wordId = (Integer)getKeyByValue(indexer,colIndexes[i]);
-			TWord word = (TWord) words.get(wordId);
-			System.out.println(" word "+String.valueOf(i+1)+": "+word.getWord()+" matches: "+
-					matrix.get(queryRow,colIndexes[i])+" freq: "+word.getFrequency());
+		
+		int i=1;
+		for (Iterator<Map.Entry<String,Integer>> wordIter =mappedRow.entrySet().iterator(); i<=k;){
+			Map.Entry pairs = (Map.Entry)wordIter.next();
+			String word = (String) pairs.getKey();
+			Integer matches = (Integer) pairs.getValue();
+			System.out.println(" word "+String.valueOf(i)+": "+word+" matches: "+matches);
 			if(tsrw!=null)
-				tsrw.setRow(" word "+String.valueOf(i+1)+": "+word.getWord()+" matches: "+
-				matrix.get(queryRow,colIndexes[i])+" freq: "+word.getFrequency());
+				tsrw.setRow(" word "+String.valueOf(i)+": "+word+" matches: "+matches);
+			i++;
 		}
 		System.out.println("Analyze took "+((System.currentTimeMillis()-startAnalyze)/1000.0) + " ");
 		return wordsFound;
@@ -268,8 +286,25 @@ public class TWordWarehouse {
 	    }
 	    return null;
 	}
+	
+	private static Map sortByValue(Map map) {
+	     List list = new LinkedList(map.entrySet());
+	     Collections.sort(list, new Comparator() {
+	          public int compare(Object o1, Object o2) {
+	               return ((Comparable) ((Map.Entry) (o2)).getValue())
+	              .compareTo(((Map.Entry) (o1)).getValue());
+	          }
+	     });
 
-	private void sortIndexer(int[] row, int[] wordsMaxQueue,int[] colIndexes) {
+	    Map result = new LinkedHashMap();
+	    for (Iterator it = list.iterator(); it.hasNext();) {
+	        Map.Entry entry = (Map.Entry)it.next();
+	        result.put(entry.getKey(), entry.getValue());
+	    }
+	    return result;
+	} 
+	
+	private void sortIndexer(Integer[] row, int[] wordsMaxQueue,int[] colIndexes) {
 		for(int i=0;i<row.length;++i){
 			for(int j=0;j<wordsMaxQueue.length;++j){
 				if(row[i]>=wordsMaxQueue[j]){
@@ -285,6 +320,22 @@ public class TWordWarehouse {
 		System.out.print("");
 	}
 	
+	static <K,V extends Comparable<? super V>> 
+	    List<Entry<K, V>> entriesSortedByValues(Map<K,V> map) {
+		
+		List<Entry<K,V>> sortedEntries = new ArrayList<Entry<K,V>>(map.entrySet());
+		
+		Collections.sort(sortedEntries, 
+		    new Comparator<Entry<K,V>>() {
+		        @Override
+		        public int compare(Entry<K,V> e1, Entry<K,V> e2) {
+		            return e2.getValue().compareTo(e1.getValue());
+		        }
+		    }
+		);
+		
+		return sortedEntries;
+	}
 	
 	private void shiftDigits(int[] wordsMax,int index){
 		if(index<wordsMax.length){

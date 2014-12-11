@@ -60,13 +60,14 @@ public class TLargeIntMatrix implements Closeable,Serializable {
     public int[] getRow(int row){
     	int [] array = new int[this.height];
         assert row >= 0 && row < height;
-       
+        
         for(int i=0; i<array.length;++i){
         	 long p = position(row,i) * NUM_BYTES;
              int mapN = (int) (p / MAPPING_SIZE);
              int offN = (int) (p % MAPPING_SIZE);
              array[i]=mappings.get(mapN).getInt(offN);
         }
+        
         return array;
     }
     
